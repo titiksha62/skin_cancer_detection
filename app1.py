@@ -91,7 +91,7 @@ with col1:
     uploaded_file = st.file_uploader("Choose a skin lesion image", type=['jpg', 'jpeg', 'png'])
     if uploaded_file:
         img = Image.open(uploaded_file)
-        st.image(img, caption="Uploaded Image", use_column_width=True)
+        st.image(img, use_container_width=True)
 
 with col2:
     st.subheader("🔍 Analysis Results")
