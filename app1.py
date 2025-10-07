@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image
 import random
+import time
 
 # Page config
 st.set_page_config(
@@ -32,11 +33,17 @@ st.markdown("""
 LABELS = ['Benign', 'Malignant']
 
 # -----------------------------
-# MOCK Predict Function
+# MOCK Predict Function with progress
 # -----------------------------
 def predict_image_mock(img):
-    # Randomly choose a prediction
-    pred_class = random.choices([0, 1], weights=[0.7, 0.3])[0]  # 70% benign, 30% malignant
+    # Simulate processing time
+    progress_bar = st.progress(0)
+    for percent_complete in range(0, 101, 5):
+        time.sleep(0.05)
+        progress_bar.progress(percent_complete)
+    
+    # Randomly predict (70% benign, 30% malignant)
+    pred_class = random.choices([0, 1], weights=[0.7, 0.3])[0]
     confidence = random.uniform(80, 99)
     
     probs = [0.0, 0.0]
