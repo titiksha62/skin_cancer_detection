@@ -39,7 +39,7 @@ st.markdown("""
 # -----------------------------
 @st.cache_resource
 def load_model():
-    model_path = "skin_cancer_model_final.h5"  # or "skin_cancer_model_best.h5"
+    model_path = "skin_cancer_model.keras"  # or "skin_cancer_model_best.h5"
     if os.path.exists(model_path):
         model = tf.keras.models.load_model(model_path)
         st.success(f"✅ Loaded model: {model_path}")
