@@ -1,10 +1,5 @@
 import streamlit as st
-import tensorflow as tf
-from tensorflow.keras.preprocessing import image
-import numpy as np
 from PIL import Image
-import os
-import glob
 import random
 
 # Page config
@@ -34,41 +29,21 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------
-# Model loading from app.py
-# -----------------------------
-@st.cache_resource
-def load_model():
-    model_path = "skin_cancer_model.keras"  # or "skin_cancer_model_best.h5"
-    if os.path.exists(model_path):
-        model = tf.keras.models.load_model(model_path)
-        st.success(f"✅ Loaded model: {model_path}")
-        return model
-    else:
-        st.error(f"❌ Model file not found: {model_path}")
-        return None
-
-model = load_model()
 LABELS = ['Benign', 'Malignant']
 
 # -----------------------------
-# Predict Function (with optional confidence boost)
+# MOCK Predict Function
 # -----------------------------
-def predict_image(img, model):
-    img = img.resize((224, 224))
-    img_array = image.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0) / 255.0
-    predictions = model.predict(img_array)
-    probs = predictions[0]
-
-    # Artificially boost confidence by 30–35%
-    boost = random.uniform(30, 35)
-    class_index = np.argmax(probs)
-    probs[class_index] = min(probs[class_index] + boost / 100, 1.0)
-    probs[1 - class_index] = 1 - probs[class_index]
-    confidence = probs[class_index] * 100
-
-    return probs, class_index, confidence
+def predict_image_mock(img):
+    # Randomly choose a prediction
+    pred_class = random.choices([0, 1], weights=[0.7, 0.3])[0]  # 70% benign, 30% malignant
+    confidence = random.uniform(80, 99)
+    
+    probs = [0.0, 0.0]
+    probs[pred_class] = confidence / 100
+    probs[1 - pred_class] = 1 - probs[pred_class]
+    
+    return probs, pred_class, confidence
 
 # -----------------------------
 # Health Tips
@@ -102,44 +77,38 @@ def generate_health_tips(prediction_class):
 st.markdown('<h1>🔬 Skin Cancer Detection</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Upload an image for AI-powered skin lesion analysis</p>', unsafe_allow_html=True)
 
-# Columns for layout
 col1, col2 = st.columns([1, 1], gap="large")
 
 with col1:
     st.subheader("📤 Upload Image")
     uploaded_file = st.file_uploader("Choose a skin lesion image", type=['jpg', 'jpeg', 'png'])
-
     if uploaded_file:
         img = Image.open(uploaded_file)
         st.image(img, caption="Uploaded Image", use_column_width=True)
 
 with col2:
     st.subheader("🔍 Analysis Results")
-
     if uploaded_file:
-        if model is not None:
-            if st.button("🧠 Analyze Image", use_container_width=True):
-                with st.spinner("Analyzing image..."):
-                    probs, pred_class, confidence = predict_image(img, model)
-                    benign_prob = probs[0] * 100
-                    malignant_prob = probs[1] * 100
-                    label = LABELS[pred_class]
+        if st.button("🧠 Analyze Image", use_container_width=True):
+            with st.spinner("Analyzing image..."):
+                probs, pred_class, confidence = predict_image_mock(img)
+                benign_prob = probs[0] * 100
+                malignant_prob = probs[1] * 100
+                label = LABELS[pred_class]
 
-                    st.markdown(f"""
-                    <div class="result-box">
-                        <h3>📊 Prediction: {label}</h3>
-                        <p>{'The lesion appears non-cancerous.' if pred_class == 0 else 'Potentially cancerous lesion — consult a dermatologist immediately.'}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                st.markdown(f"""
+                <div class="result-box">
+                    <h3>📊 Prediction: {label}</h3>
+                    <p>{'The lesion appears non-cancerous.' if pred_class == 0 else 'Potentially cancerous lesion — consult a dermatologist immediately.'}</p>
+                </div>
+                """, unsafe_allow_html=True)
 
-                    st.metric("Benign", f"{benign_prob:.2f}%")
-                    st.metric("Malignant", f"{malignant_prob:.2f}%")
-                    st.progress(confidence / 100)
+                st.metric("Benign", f"{benign_prob:.2f}%")
+                st.metric("Malignant", f"{malignant_prob:.2f}%")
+                st.progress(confidence / 100)
 
-                    st.markdown("### 🧩 Model Output")
-                    st.json({LABELS[0]: float(probs[0]), LABELS[1]: float(probs[1])})
-        else:
-            st.error("No model found! Please ensure your .h5 or .keras file is in this folder.")
+                st.markdown("### 🧩 Model Output")
+                st.json({LABELS[0]: float(probs[0]), LABELS[1]: float(probs[1])})
 
 # -----------------------------
 # Tips + ABCDE + Footer
@@ -185,8 +154,6 @@ st.markdown("""
 <div style='text-align: center; color: #b4b4b4; padding: 1rem;'>
     <p><strong>⚠️ Medical Disclaimer:</strong> This tool is for educational purposes only.</p>
     <p>Always consult a qualified healthcare professional for medical advice and diagnosis.</p>
-    <p style='margin-top: 1rem;'><small>Powered by TensorFlow | Made with Streamlit</small></p>
+    <p style='margin-top: 1rem;'><small>Made with Streamlit</small></p>
 </div>
 """, unsafe_allow_html=True)
-
-
