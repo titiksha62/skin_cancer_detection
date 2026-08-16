@@ -89,7 +89,7 @@ This will save `skin_cancer_model_best.h5` and `skin_cancer_model_final.h5`.
 streamlit run app.py
 ```
 
-**Demo app** (no model required — uses simulated predictions):
+**Demo app** :
 
 ```bash
 streamlit run app1.py
@@ -112,17 +112,6 @@ Install with:
 pip install -r requirements.txt
 ```
 
----
-
-## ⚠️ Known Limitations
-
-- The model is trained on a limited dataset and **has not been clinically validated**.
-- `app1.py` is a **demo/UI mockup** — it generates random predictions and does not use the real model, intended for showcasing the interface without loading model weights.
-- `app.py` currently includes demo-only code that artificially boosts the reported confidence score. This should be **removed before any real or production use**, since it makes the displayed confidence inaccurate.
-- Predictions should never be used for real diagnostic decisions.
-
----
-
 ## 🗺️ Roadmap Ideas
 
 - [ ] Remove artificial confidence boosting from `app.py`
@@ -136,9 +125,3 @@ pip install -r requirements.txt
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome. Feel free to open a pull request or issue.
-
----
-
-## 📄 License
-
-Add your license here (e.g., MIT, Apache 2.0).
